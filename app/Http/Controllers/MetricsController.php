@@ -20,7 +20,7 @@ class MetricsController extends Controller
         $registry = new CollectorRegistry(new InMemory());
 
         $counter = $registry->getOrRegisterCounter('test', 'some_counter', 'it sets', ['type']);
-        $counter->inc(1);
+        $counter->incBy(1,['counter']);
 
         $renderer = new RenderTextFormat();
         $result = $renderer->render($registry->getMetricFamilySamples());
