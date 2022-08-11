@@ -19,8 +19,8 @@ class MetricsController extends Controller
     {
         $registry = new CollectorRegistry(new InMemory());
 
-        $counter = $registry->getOrRegisterGauge('test', 'some_counter', 'it sets', ['type']);
-        $counter->set(rand(1, 99), ['blue']);
+        $counter = $registry->getOrRegisterCounter('test', 'some_counter', 'it sets', ['type']);
+        $counter->inc(1);
 
         $renderer = new RenderTextFormat();
         $result = $renderer->render($registry->getMetricFamilySamples());
