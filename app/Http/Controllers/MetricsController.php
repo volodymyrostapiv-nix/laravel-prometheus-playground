@@ -26,15 +26,14 @@ class MetricsController extends Controller
         ->getOrRegisterCounter('total', 'models', 'it sets', ['type'])
         ->incBy(MyFirstModel::all()->count(),['count']);
 
-        //Recent
-        $stamp = Carbon::now()->subMinutes(30)->format("Y:m:d H:i:s");
+        //Recent (newer than subMinutes from now)
+        $stamp = Carbon::now()->subMinutes(30)->format("Y-m-d H:i:s");
 
         $registry
             ->getOrRegisterCounter('recent', 'models', $stamp, ['type'])
             ->incBy(MyFirstModel::where('created_at', '>=', $stamp)
                 ->get()
                 ->count(),['count']);
-
 
         $renderer = new RenderTextFormat();
         $result = $renderer->render($registry->getMetricFamilySamples());
