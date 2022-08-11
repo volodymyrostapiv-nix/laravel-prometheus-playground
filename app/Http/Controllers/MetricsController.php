@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MyFirstModel;
+use Carbon\Carbon;
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricsRegistrationException;
 use Prometheus\RenderTextFormat;
@@ -19,8 +21,20 @@ class MetricsController extends Controller
     {
         $registry = new CollectorRegistry(new InMemory());
 
-        $counter = $registry->getOrRegisterCounter('test', 'some_counter', 'it sets', ['type']);
-        $counter->incBy(1,['counter']);
+        //Total
+        $registry
+        ->getOrRegisterCounter('total', 'models', 'it sets', ['type'])
+        ->incBy(MyFirstModel::all()->count(),['count']);
+
+        //Recent
+        $stamp = Carbon::now()->subMinutes(30)->format("Y:m:d H:i:s");
+
+        $registry
+            ->getOrRegisterCounter('recent', 'models', $stamp, ['type'])
+            ->incBy(MyFirstModel::where('created_at', '>=', $stamp)
+                ->get()
+                ->count(),['count']);
+
 
         $renderer = new RenderTextFormat();
         $result = $renderer->render($registry->getMetricFamilySamples());
